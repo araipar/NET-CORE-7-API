@@ -18,17 +18,23 @@ namespace MagicVila_Restful_Course.Controllers
 
         private readonly ILogger<VillaAPIController> _logger;
 
-        public VillaAPIController(ILogger<VillaAPIController> logger)
+        private readonly ApplicationDbContext _db;
+
+        public VillaAPIController(ILogger<VillaAPIController> logger, ApplicationDbContext db)
         {
             _logger = logger;
+            _db = db;
         }
+
+  
 
         // GET: /<controller>/
         [HttpGet]
         public ActionResult<IEnumerable<Villa>> GetVillas()
         {
             _logger.LogInformation("Getting all villas");
-            return Ok(VillaStore.villaList);
+
+            return Ok(_db.Villas.ToList());
         }
 
         [HttpGet("{id:int}", Name = "GetVilla")]
@@ -43,7 +49,7 @@ namespace MagicVila_Restful_Course.Controllers
                 _logger.LogError("Get Villa Error with Id " + id);
                 return BadRequest();
             }
-            var villa = VillaStore.villaList.FirstOrDefault(u => u.Id == id);
+            var villa = _db.Villas.FirstOrDefault(u => u.Id == id);
             if (villa == null)
             {
                 return NotFound();
